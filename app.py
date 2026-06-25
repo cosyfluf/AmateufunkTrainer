@@ -78,7 +78,7 @@ class Api:
         cls = str(class_id)
         qs = self.questions_by_class.get(cls, [])
         total = len(qs)
-        learned = sum(1 for q in qs if self._score(q["number"]) >= 5)
+        learned = sum(1 for q in qs if self._score(q["number"]) >= 1)
         return {
             "total": total,
             "learned": learned,
@@ -360,15 +360,14 @@ body::before {
 #svg-container {
   background: #fff;
   border-radius: var(--radius-sm);
-  padding: 16px;
+  padding: 12px;
   margin-bottom: 22px;
   display: none;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
   box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06);
 }
-#svg-container svg { max-width: 100%; height: auto; display: block; }
+#svg-container svg { width: 100%; height: auto; max-width: 100%; max-height: 70vh; display: block; }
 #svg-container.show { display: flex; }
 
 #score-row {
