@@ -58,6 +58,31 @@ def nums_in_text(pattern):
 
 explanations = {}
 
+def asciify(s):
+    """Replace all non-ASCII German chars with ASCII equivalents."""
+    replacements = {
+        "\u00e4": "ae", "\u00f6": "oe", "\u00fc": "ue", "\u00df": "ss",
+        "\u00c4": "Ae", "\u00d6": "Oe", "\u00dc": "Ue",
+        "\u03a9": "Ohm", "\u2126": "Ohm",
+        "\u03bc": "u", "\u00b5": "u",
+        "\u03bb": "lambda",
+        "\u03c0": "pi",
+        "\u03b7": "eta",
+        "\u03c4": "tau",
+        "\u03b3": "gamma",
+        "\u03b5": "epsilon",
+        "\u03b4": "delta",
+        "\u03c6": "phi", "\u03d5": "phi",
+        "\u03b8": "theta",
+        "\u03b1": "alpha",
+        "\u03b2": "beta",
+        "\u00b0": " Grad",
+        "\u2192": "->",
+    }
+    for old, new in replacements.items():
+        s = s.replace(old, new)
+    return s
+
 def gen(q):
     global text, answers, correct
     text = q["question"]
@@ -410,10 +435,10 @@ for q in questions:
     if num not in explanations:
         exp = gen(q)
         if exp:
-            explanations[num] = exp
+            explanations[num] = asciify(exp)
 
-with open("explanations.json", "w", encoding="utf-8") as f:
-    json.dump(explanations, f, indent=2, ensure_ascii=False)
+with open("explanations.json", "w", encoding="ascii") as f:
+    json.dump(explanations, f, indent=2, ensure_ascii=True)
 
 stats = {}
 for q in questions:
