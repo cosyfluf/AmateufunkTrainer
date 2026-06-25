@@ -477,19 +477,20 @@ body::before {
 }
 
 .answer-svg-wrap {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   background: #fff;
   border-radius: 8px;
-  padding: 4px 8px;
+  padding: 8px 12px;
   margin: 2px 0;
-  max-width: 220px;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 .answer-svg-wrap svg {
   display: block;
   max-width: 100%;
-  max-height: 80px;
+  max-height: 200px;
   width: auto;
   height: auto;
 }
