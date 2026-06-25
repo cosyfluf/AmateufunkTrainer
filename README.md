@@ -37,6 +37,12 @@ pip install pywebview
 python app.py
 ```
 
+Die Dateien `PruefungsfragenZIP/` und `explanations.json` müssen im selben Ordner wie `app.py` liegen.
+
+### Alternativ: Fertige .exe (Windows)
+
+Lade die neueste `AmateurfunkTrainer.exe` aus dem [Releases](https://github.com/Cosyfluf/Lizenz-leichtgemacht/releases)-Bereich herunter. Keine Installation erforderlich – die .exe enthält bereits alle Fragen, SVGs und Erklärungen.
+
 ### Alternativ: Fertige .exe (Windows)
 
 Lade die neueste `AmateurfunkTrainer.exe` aus dem [Releases](https://github.com/Cosyfluf/Lizenz-leichtgemacht/releases)-Bereich herunter. Keine Python-Installation erforderlich.
@@ -46,6 +52,8 @@ Lade die neueste `AmateurfunkTrainer.exe` aus dem [Releases](https://github.com/
 ```
 .
 ├── app.py                   # Hauptanwendung (Python + HTML/CSS/JS)
+├── explanations.json        # Erklärungen zu den Fragen (416 Stück)
+├── generate_explanations.py # Generator für explanations.json
 ├── fortschritt.json         # Lernfortschritt (wird automatisch erstellt)
 ├── README.md
 ├── LICENSE
@@ -70,7 +78,11 @@ Lade die neueste `AmateurfunkTrainer.exe` aus dem [Releases](https://github.com/
 |--------|---------------|
 | Richtige Antwort | +1 |
 | Falsche Antwort | -1 (mindestens 0) |
-| Frage gilt als gelernt | Score = 5 |
+| Frage gilt als gelernt | Score ≥ 1 |
+
+### Erklärungen
+
+Zu über 400 Fragen (insb. mathematische und technische) werden nach der Antwort automatisch Erklärungen mit Formeln und Rechenwegen eingeblendet. Die Erklärungen können in `explanations.json` erweitert werden.
 
 ## Für Entwickler: Eigene .exe bauen
 
@@ -78,12 +90,15 @@ Mit PyInstaller kann eine eigenständige Windows-Exe erstellt werden:
 
 ```bash
 pip install pyinstaller
-pyinstaller --onefile --windowed --name "AmateurfunkTrainer" --add-data "PruefungsfragenZIP;PruefungsfragenZIP" app.py
+python generate_explanations.py        # Erklärungen generieren
+pyinstaller --onefile --windowed --name "AmateurfunkTrainer" ^
+  --add-data "PruefungsfragenZIP;PruefungsfragenZIP" ^
+  --add-data "explanations.json;." app.py
 ```
 
 Die fertige `.exe` liegt dann im `dist/`-Ordner.
 
-**Wichtig:** Die `.exe` muss zusammen mit dem Ordner `PruefungsfragenZIP/` im selben Verzeichnis bleiben, da die Fragen- und SVG-Daten zur Laufzeit geladen werden.
+**Hinweis:** Die `.exe` enthält bereits alle Fragen, SVGs und Erklärungen. Es wird kein zusätzlicher Ordner neben der .exe benötigt.
 
 ## Lizenz
 
