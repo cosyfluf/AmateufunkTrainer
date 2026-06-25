@@ -5,6 +5,7 @@ __pycache__/
 
 # Build artifacts
 build_temp/
+build/
 *.spec
 
 # Application data

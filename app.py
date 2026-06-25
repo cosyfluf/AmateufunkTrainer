@@ -169,250 +169,483 @@ HTML = r"""<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Amateurfunk Prüfungsvorbereitung</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 <style>
 :root {
-  --bg: #1a1d23;
-  --surface: #282c35;
-  --surface-hover: #323642;
-  --text: #e0e0e0;
-  --text-dim: #9e9e9e;
-  --accent: #4a9eff;
-  --accent-hover: #6bb1ff;
-  --correct: #4caf50;
-  --incorrect: #e53935;
-  --border: #3a3f4b;
-  --shadow: rgba(0,0,0,0.3);
-  --radius: 10px;
+  --bg: #0f1117;
+  --bg-alt: #161922;
+  --surface: #1e2230;
+  --surface-hover: #262b3d;
+  --surface-elevated: #2a3045;
+  --text: #e8edf5;
+  --text-dim: #8891a8;
+  --text-muted: #5b647e;
+  --accent: #5b8def;
+  --accent-glow: rgba(91,141,239,0.25);
+  --accent-hover: #7aa3ff;
+  --correct: #34d399;
+  --correct-bg: rgba(52,211,153,0.12);
+  --incorrect: #f87171;
+  --incorrect-bg: rgba(248,113,113,0.12);
+  --border: #2a3045;
+  --radius: 14px;
+  --radius-sm: 10px;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background: var(--bg);
   color: var(--text);
-  padding: 20px;
   min-height: 100vh;
+  position: relative;
 }
-#app { max-width: 800px; margin: 0 auto; }
+body::before {
+  content: '';
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(ellipse at 30% 20%, rgba(91,141,239,0.06) 0%, transparent 50%),
+              radial-gradient(ellipse at 70% 80%, rgba(52,211,153,0.04) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+#app {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 28px 24px 48px;
+  position: relative;
+  z-index: 1;
+}
 
-header {
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.app-title {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  background: linear-gradient(135deg, var(--accent), #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.class-picker {
+  display: flex;
+  gap: 4px;
   background: var(--surface);
-  border-radius: var(--radius);
-  padding: 20px 24px;
-  box-shadow: 0 2px 12px var(--shadow);
-  margin-bottom: 20px;
+  padding: 4px;
+  border-radius: var(--radius-sm);
 }
-.header-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-header select {
-  background: var(--bg);
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 8px 14px;
-  font-size: 15px;
+.class-btn {
+  padding: 8px 18px;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-dim);
+  background: transparent;
   cursor: pointer;
-  outline: none;
+  transition: all 0.2s;
 }
-header select:focus { border-color: var(--accent); }
+.class-btn:hover { color: var(--text); }
+.class-btn.active {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 2px 8px var(--accent-glow);
+}
 
-#stats { flex: 1; min-width: 200px; }
+#stats-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 22px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+#stats-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), #a78bfa);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+#stats-body { flex: 1; min-width: 0; }
+#stats-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+#stats-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
 #progress-text {
   font-size: 13px;
-  color: var(--text-dim);
-  margin-bottom: 6px;
+  font-weight: 600;
+  color: var(--accent);
 }
 #progress-bar {
   width: 100%;
-  height: 8px;
-  background: var(--bg);
-  border-radius: 4px;
+  height: 6px;
+  background: var(--bg-alt);
+  border-radius: 3px;
   overflow: hidden;
 }
 #progress-fill {
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, var(--accent), #6fcf97);
-  border-radius: 4px;
-  transition: width 0.5s ease;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--accent), #34d399);
+  transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 #question-card {
   background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 28px;
-  box-shadow: 0 2px 12px var(--shadow);
+  transition: opacity 0.2s;
 }
 #q-number {
-  font-size: 13px;
-  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
   color: var(--accent);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 12px;
+  letter-spacing: 0.8px;
+  margin-bottom: 14px;
+  padding: 4px 12px;
+  background: var(--accent-glow);
+  border-radius: 6px;
+}
+#q-number .num-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
 }
 #q-text {
-  font-size: 16px;
-  line-height: 1.6;
-  margin-bottom: 20px;
+  font-size: 16.5px;
+  line-height: 1.7;
+  font-weight: 500;
+  margin-bottom: 22px;
+  color: var(--text);
 }
 #q-text .katex { font-size: 1.05em; }
 
 #svg-container {
   background: #fff;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   padding: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
   display: none;
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06);
 }
-#svg-container svg {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
+#svg-container svg { max-width: 100%; height: auto; display: block; }
 #svg-container.show { display: flex; }
 
-#answers { display: grid; gap: 10px; }
+#score-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+#score-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-dim);
+  padding: 4px 12px;
+  background: var(--bg-alt);
+  border-radius: 20px;
+}
+#score-badge .score-star {
+  color: #fbbf24;
+  font-size: 11px;
+}
+
+#answers {
+  display: grid;
+  gap: 10px;
+}
 .answer-btn {
-  display: block;
+  display: flex;
+  align-items: center;
   width: 100%;
   text-align: left;
-  padding: 14px 18px;
-  background: var(--bg);
-  border: 2px solid var(--border);
-  border-radius: 8px;
+  padding: 16px 20px;
+  background: var(--bg-alt);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
   color: var(--text);
   font-size: 15px;
   line-height: 1.5;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+  transition: all 0.18s ease;
+  position: relative;
+  overflow: hidden;
+}
+.answer-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--accent), transparent);
+  opacity: 0;
+  transition: opacity 0.18s;
 }
 .answer-btn:hover:not(.disabled) {
-  background: var(--surface-hover);
   border-color: var(--accent);
+  background: var(--surface-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(91,141,239,0.1);
 }
-.answer-btn:active:not(.disabled) { transform: scale(0.99); }
+.answer-btn:active:not(.disabled) {
+  transform: translateY(0);
+  box-shadow: none;
+}
 .answer-btn .label {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
   font-weight: 700;
+  font-size: 13px;
   color: var(--accent);
-  margin-right: 10px;
-  min-width: 22px;
+  background: var(--accent-glow);
+  margin-right: 14px;
+  flex-shrink: 0;
+  transition: all 0.18s;
 }
 .answer-btn.correct {
   border-color: var(--correct);
-  background: rgba(76,175,80,0.12);
+  background: var(--correct-bg);
 }
-.answer-btn.correct .label { color: var(--correct); }
+.answer-btn.correct .label {
+  background: var(--correct);
+  color: #fff;
+}
 .answer-btn.incorrect {
   border-color: var(--incorrect);
-  background: rgba(229,57,53,0.12);
+  background: var(--incorrect-bg);
+  animation: shake 0.35s ease;
 }
-.answer-btn.incorrect .label { color: var(--incorrect); }
-.answer-btn.disabled { cursor: default; opacity: 0.85; }
+.answer-btn.incorrect .label {
+  background: var(--incorrect);
+  color: #fff;
+}
+.answer-btn.disabled { cursor: default; }
+.answer-btn.disabled:not(.correct):not(.incorrect) { opacity: 0.5; }
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
 
 .answer-svg-wrap {
-  display: inline-block;
+  display: inline-flex;
   background: #fff;
-  border-radius: 6px;
-  padding: 8px;
-  margin: 4px 0;
+  border-radius: 8px;
+  padding: 6px 10px;
+  margin: 2px 0;
   max-width: 100%;
   overflow: hidden;
+  transition: border-color 0.18s;
 }
 .answer-svg-wrap svg {
   display: block;
   max-width: 100%;
-  max-height: 80px;
+  max-height: 70px;
   width: auto;
   height: auto;
+}
+
+#feedback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 700;
+  min-height: 48px;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: all 0.25s ease;
+}
+#feedback.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+#feedback.correct {
+  background: var(--correct-bg);
+  color: var(--correct);
+}
+#feedback.incorrect {
+  background: var(--incorrect-bg);
+  color: var(--incorrect);
 }
 
 #next-btn {
   display: none;
   width: 100%;
-  margin-top: 18px;
-  padding: 14px;
-  background: var(--accent);
+  margin-top: 14px;
+  padding: 16px;
+  background: linear-gradient(135deg, var(--accent), #7c6df0);
   color: #fff;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s;
+  letter-spacing: 0.2px;
+  position: relative;
+  overflow: hidden;
 }
-#next-btn:hover { background: var(--accent-hover); }
+#next-btn::after {
+  content: '\2192';
+  margin-left: 6px;
+  display: inline-block;
+  transition: transform 0.2s;
+}
+#next-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px var(--accent-glow);
+}
+#next-btn:hover::after { transform: translateX(3px); }
 #next-btn.show { display: block; }
-
-#feedback {
-  text-align: center;
-  font-size: 15px;
-  font-weight: 600;
-  margin-top: 14px;
-  min-height: 24px;
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-#feedback.correct { color: var(--correct); }
-#feedback.incorrect { color: var(--incorrect); }
+#next-btn.show { animation: fadeSlideUp 0.3s ease; }
 
 #done-message {
   display: none;
   background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 48px 28px;
+  padding: 56px 32px;
   text-align: center;
-  box-shadow: 0 2px 12px var(--shadow);
 }
 #done-message.show { display: block; }
-#done-message h2 {
-  font-size: 24px;
-  margin-bottom: 10px;
-  color: var(--accent);
+#done-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  display: block;
 }
-#done-message p { color: var(--text-dim); font-size: 15px; }
-
-#score-badge {
-  display: inline-block;
-  background: var(--bg);
+#done-message h2 {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 10px;
+  background: linear-gradient(135deg, var(--accent), #34d399);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+#done-message p {
   color: var(--text-dim);
-  font-size: 12px;
-  padding: 3px 10px;
-  border-radius: 12px;
-  margin-bottom: 12px;
+  font-size: 15px;
+  line-height: 1.6;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+#done-message.show { animation: fadeIn 0.4s ease; }
+
+.loading-dots::after {
+  content: '';
+  animation: dots 1.2s steps(4, end) infinite;
+}
+@keyframes dots {
+  0% { content: ''; }
+  25% { content: '.'; }
+  50% { content: '..'; }
+  75% { content: '...'; }
 }
 </style>
 </head>
 <body>
 <div id="app">
-  <header>
-    <div class="header-row">
-      <select id="class-select">
-        <option value="1">Klasse N</option>
-        <option value="2">Klasse E</option>
-        <option value="3">Klasse A</option>
-      </select>
-      <div id="stats">
-        <div id="progress-text">0 / 0 Fragen gelernt</div>
-        <div id="progress-bar"><div id="progress-fill"></div></div>
-      </div>
+  <div class="app-header">
+    <div class="app-title">Amateurfunk Trainer</div>
+    <div class="class-picker" id="class-picker">
+      <button class="class-btn active" data-class="1">N</button>
+      <button class="class-btn" data-class="2">E</button>
+      <button class="class-btn" data-class="3">A</button>
     </div>
-  </header>
+  </div>
+
+  <div id="stats-card">
+    <div id="stats-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+    </div>
+    <div id="stats-body">
+      <div id="stats-header">
+        <span id="stats-label">Lernfortschritt</span>
+        <span id="progress-text">0 / 0</span>
+      </div>
+      <div id="progress-bar"><div id="progress-fill"></div></div>
+    </div>
+  </div>
 
   <div id="question-card">
-    <div id="q-number"></div>
+    <div id="q-number"><span class="num-dot"></span> Frage laden...</div>
     <div id="q-text"></div>
     <div id="svg-container"></div>
     <div id="answers"></div>
-    <div id="score-badge"></div>
+    <div id="score-row" style="display:none">
+      <div id="score-badge">&#9733; <span id="score-val">0</span>/5</div>
+    </div>
     <div id="feedback"></div>
     <button id="next-btn">N&auml;chste Frage</button>
   </div>
 
   <div id="done-message">
+    <span id="done-icon">&#10004;</span>
     <h2>Alle Fragen gelernt!</h2>
-    <p>Herzlichen Gl&uuml;ckwunsch! Du hast alle Fragen dieser Klasse erfolgreich abgeschlossen.</p>
+    <p>Herzlichen Gl&uuml;ckwunsch!<br>Du hast alle Fragen dieser Klasse erfolgreich abgeschlossen.</p>
   </div>
 </div>
 
@@ -424,7 +657,7 @@ header select:focus { border-color: var(--accent); }
   var currentNumber = null;
   var answered = false;
 
-  var sel = document.getElementById('class-select');
+  var picker = document.getElementById('class-picker');
   var qNumber = document.getElementById('q-number');
   var qText = document.getElementById('q-text');
   var svgContainer = document.getElementById('svg-container');
@@ -435,7 +668,8 @@ header select:focus { border-color: var(--accent); }
   var progressFill = document.getElementById('progress-fill');
   var questionCard = document.getElementById('question-card');
   var doneMessage = document.getElementById('done-message');
-  var scoreBadge = document.getElementById('score-badge');
+  var scoreRow = document.getElementById('score-row');
+  var scoreVal = document.getElementById('score-val');
 
   function renderMath(el) {
     if (typeof renderMathInElement === 'function') {
@@ -443,8 +677,17 @@ header select:focus { border-color: var(--accent); }
     }
   }
 
+  function switchClass(cls) {
+    currentClass = cls;
+    picker.querySelectorAll('.class-btn').forEach(function(b) {
+      b.classList.toggle('active', b.getAttribute('data-class') === cls);
+    });
+    loadQuestion();
+    updateProgressFromServer();
+  }
+
   function updateProgress(data) {
-    progressText.textContent = data.learned + ' / ' + data.total + ' Fragen gelernt';
+    progressText.textContent = data.learned + ' / ' + data.total;
     progressFill.style.width = data.percent + '%';
   }
 
@@ -453,7 +696,10 @@ header select:focus { border-color: var(--accent); }
     nextBtn.classList.remove('show');
     feedback.textContent = '';
     feedback.className = '';
-    scoreBadge.textContent = '';
+    feedback.classList.remove('show');
+    scoreRow.style.display = 'none';
+    questionCard.style.display = 'block';
+    doneMessage.classList.remove('show');
 
     pywebview.api.get_question(currentClass).then(function(data) {
       if (data.done) {
@@ -461,11 +707,9 @@ header select:focus { border-color: var(--accent); }
         doneMessage.classList.add('show');
         return;
       }
-      questionCard.style.display = 'block';
-      doneMessage.classList.remove('show');
 
       currentNumber = data.number;
-      qNumber.textContent = data.number;
+      qNumber.innerHTML = '<span class="num-dot"></span> ' + data.number;
       qText.innerHTML = data.question;
       renderMath(qText);
 
@@ -478,7 +722,8 @@ header select:focus { border-color: var(--accent); }
       }
 
       if (data.current_score > 0) {
-        scoreBadge.textContent = 'Score: ' + data.current_score + '/5';
+        scoreRow.style.display = 'flex';
+        scoreVal.textContent = data.current_score;
       }
 
       answersEl.innerHTML = '';
@@ -527,26 +772,14 @@ header select:focus { border-color: var(--accent); }
         btn.classList.add('disabled');
         if (i === result.correct_index) {
           btn.classList.add('correct');
-          var wrap = btn.querySelector('.answer-svg-wrap');
-          if (wrap) {
-            wrap.style.border = '3px solid var(--correct)';
-          }
         } else if (i === idx && !result.correct) {
           btn.classList.add('incorrect');
-          var wrap = btn.querySelector('.answer-svg-wrap');
-          if (wrap) {
-            wrap.style.border = '3px solid var(--incorrect)';
-          }
         }
       });
 
-      if (result.correct) {
-        feedback.textContent = 'Richtig! (+1)';
-        feedback.className = 'correct';
-      } else {
-        feedback.textContent = 'Falsch! (-1)';
-        feedback.className = 'incorrect';
-      }
+      feedback.textContent = result.correct ? '\u2713 Richtig! (+1)' : '\u2717 Falsch! (-1)';
+      feedback.className = result.correct ? 'correct' : 'incorrect';
+      feedback.classList.add('show');
 
       nextBtn.classList.add('show');
       updateProgressFromServer();
@@ -559,16 +792,16 @@ header select:focus { border-color: var(--accent); }
 
   nextBtn.addEventListener('click', loadQuestion);
 
-  sel.addEventListener('change', function() {
-    currentClass = sel.value;
-    loadQuestion();
-    updateProgressFromServer();
+  picker.addEventListener('click', function(e) {
+    var btn = e.target.closest('.class-btn');
+    if (btn) {
+      var cls = btn.getAttribute('data-class');
+      if (cls !== currentClass) switchClass(cls);
+    }
   });
 
   function init() {
-    currentClass = sel.value;
-    loadQuestion();
-    updateProgressFromServer();
+    switchClass('1');
   }
 
   document.addEventListener('pywebviewready', init);
