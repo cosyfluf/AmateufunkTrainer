@@ -89,7 +89,7 @@ Die fertige `.exe` liegt dann im `dist/`-Ordner.
 
 ### Anwendungscode
 
-Copyright (c) 2024 **Cosyfluf**
+Copyright (c) 2026 **Cosyfluf**
 
 MIT License — siehe [LICENSE](LICENSE).
 
