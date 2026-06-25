@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Build artifacts
+build_temp/
+*.spec
+
+# Application data
+fortschritt.json
+
+# Releases
+*.exe
+*.zip
+dist/
