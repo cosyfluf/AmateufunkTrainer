@@ -478,18 +478,18 @@ body::before {
 
 .answer-svg-wrap {
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: #fff;
   border-radius: 8px;
-  padding: 6px 10px;
+  padding: 4px 8px;
   margin: 2px 0;
-  max-width: 100%;
-  overflow: hidden;
-  transition: border-color 0.18s;
+  max-width: 220px;
 }
 .answer-svg-wrap svg {
   display: block;
   max-width: 100%;
-  max-height: 70px;
+  max-height: 80px;
   width: auto;
   height: auto;
 }
