@@ -37,7 +37,7 @@ pip install pywebview
 python app.py
 ```
 
-Die Dateien `PruefungsfragenZIP/` und `explanations.json` müssen im selben Ordner wie `app.py` liegen.
+Die Dateien `PruefungsfragenZIP/` müssen im selben Ordner wie `app.py` liegen.
 
 ### Alternativ: Fertige .exe (Windows)
 

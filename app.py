@@ -13,7 +13,6 @@ else:
     USER_DIR = DATA_DIR
 QUESTIONS_FILE = os.path.join(DATA_DIR, "PruefungsfragenZIP", "fragenkatalog3b.json")
 SVG_DIR = os.path.join(DATA_DIR, "PruefungsfragenZIP", "svgs")
-EXPLANATIONS_FILE = os.path.join(DATA_DIR, "explanations.json")
 PROGRESS_FILE = os.path.join(USER_DIR, "fortschritt.json")
 
 
@@ -50,7 +49,6 @@ class Api:
     def __init__(self):
         self.questions_by_class = {}
         self.progress = {}
-        self.explanations = {}
         self._current_qnum = None
         self._current_correct_idx = None
         self.load_data()
@@ -61,12 +59,6 @@ class Api:
         sections = data.get("sections", [])
         for cls in ("1", "2", "3"):
             self.questions_by_class[cls] = extract_questions(sections, cls)
-        if os.path.exists(EXPLANATIONS_FILE):
-            try:
-                with open(EXPLANATIONS_FILE, "r", encoding="utf-8") as f:
-                    self.explanations = json.load(f)
-            except (json.JSONDecodeError, IOError):
-                self.explanations = {}
         if os.path.exists(PROGRESS_FILE):
             try:
                 with open(PROGRESS_FILE, "r", encoding="utf-8") as f:
@@ -170,7 +162,6 @@ class Api:
             "correct": is_correct,
             "correct_index": self._current_correct_idx,
             "new_score": score,
-            "explanation": self.explanations.get(str(question_number)),
         }
 
 
@@ -534,29 +525,6 @@ body::before {
   color: var(--incorrect);
 }
 
-#explanation {
-  display: none;
-  margin-top: 14px;
-  padding: 14px 18px;
-  background: var(--bg-alt);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  line-height: 1.7;
-  color: var(--text-dim);
-}
-#explanation.show { display: block; }
-#explanation .explain-label {
-  display: block;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--accent);
-  margin-bottom: 6px;
-}
-#explanation .katex { font-size: 1.05em; }
-
 #next-btn {
   display: none;
   width: 100%;
@@ -673,7 +641,6 @@ body::before {
       <div id="score-badge">&#9733; <span id="score-val">0</span>/5</div>
     </div>
     <div id="feedback"></div>
-    <div id="explanation"></div>
     <button id="next-btn">N&auml;chste Frage</button>
   </div>
 
@@ -705,7 +672,6 @@ body::before {
   var doneMessage = document.getElementById('done-message');
   var scoreRow = document.getElementById('score-row');
   var scoreVal = document.getElementById('score-val');
-  var explanationEl = document.getElementById('explanation');
 
   function renderMath(el) {
     if (typeof renderMathInElement === 'function') {
@@ -733,8 +699,6 @@ body::before {
     feedback.textContent = '';
     feedback.className = '';
     feedback.classList.remove('show');
-    explanationEl.textContent = '';
-    explanationEl.classList.remove('show');
     scoreRow.style.display = 'none';
     questionCard.style.display = 'block';
     doneMessage.classList.remove('show');
@@ -819,12 +783,6 @@ body::before {
       feedback.className = result.correct ? 'correct' : 'incorrect';
       feedback.classList.add('show');
 
-      if (result.explanation) {
-        explanationEl.innerHTML = '<span class="explain-label">Erkl\u00e4rung</span>' + result.explanation;
-        renderMath(explanationEl);
-        explanationEl.classList.add('show');
-      }
-
       nextBtn.classList.add('show');
       updateProgressFromServer();
     });
@@ -848,7 +806,7 @@ body::before {
     switchClass('1');
   }
 
-  document.addEventListener('pywebviewready', init);
+  window.addEventListener('pywebviewready', init);
   if (typeof pywebview !== 'undefined' && pywebview.api) {
     init();
   }
